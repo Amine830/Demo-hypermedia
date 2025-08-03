@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client REST Pizza - Approche Traditionnelle</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🍕 Pizza REST Classique</h1>
+        <div class="description">
+            <span class="badge">REST</span>
+            <p>Cette application utilise une API REST traditionnelle avec des endpoints fixes et prédéfinis.</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- Page d'accueil -->
+        <section id="home" class="page active">
+            <h2>Bienvenue chez PizzaREST</h2>
+            <p>Commandez vos pizzas préférées avec notre API REST classique</p>
+            <button id="showMenuBtn" class="btn primary">Voir le menu</button>
+            <div class="api-info">
+                <h3>API REST Classique</h3>
+                <p>Le client connaît à l'avance tous les endpoints de l'API :</p>
+                <ul>
+                    <li>GET /menu</li>
+                    <li>POST /order</li>
+                    <li>GET /track/:orderId</li>
+                    <li>DELETE /order/:orderId</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Page Menu -->
+        <section id="menu" class="page">
+            <h2>Notre Menu</h2>
+            <div id="pizzaList" class="pizza-list">
+                <!-- Les pizzas seront chargées dynamiquement ici -->
+                <div class="loading">Chargement du menu...</div>
+            </div>
+            <button class="btn secondary" onclick="showPage('home')">Retour à l'accueil</button>
+            <div class="api-response">
+                <h3>Réponse API</h3>
+                <pre id="menuResponse">Attente de la réponse...</pre>
+            </div>
+        </section>
+
+        <!-- Page Commande -->
+        <section id="order" class="page">
+            <h2>Commander une Pizza</h2>
+            <div class="selected-pizza">
+                <h3 id="selectedPizzaName"></h3>
+                <p>Prix: <span id="selectedPizzaPrice"></span> €</p>
+            </div>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="quantity">Quantité:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" value="1">
+                </div>
+                <button type="submit" class="btn primary">Commander</button>
+                <button type="button" class="btn secondary" onclick="showPage('menu')">Retour au menu</button>
+            </form>
+            <div class="api-info">
+                <h3>Endpoint REST</h3>
+                <p>POST /order</p>
+                <p>Requête:</p>
+                <pre id="orderRequest">{ "pizzaId": 1, "quantity": 1 }</pre>
+            </div>
+            <div class="api-response">
+                <h3>Réponse API</h3>
+                <pre id="orderResponse">Attente de la réponse...</pre>
+            </div>
+        </section>
+
+        <!-- Page Suivi de commande -->
+        <section id="track" class="page">
+            <h2>Suivi de votre commande</h2>
+            <div id="orderDetails" class="order-details">
+                <div class="status-card">
+                    <p>Commande n° <span id="displayOrderId"></span></p>
+                    <div class="status-badge" id="orderStatusBadge">En attente</div>
+                </div>
+                <button id="refreshTrackingBtn" class="btn secondary">Rafraîchir</button>
+                <button id="cancelOrderBtn" class="btn danger">Annuler la commande</button>
+            </div>
+            <button class="btn secondary" onclick="showPage('home')">Retour à l'accueil</button>
+            <div class="api-info">
+                <h3>Endpoints REST</h3>
+                <p>GET /track/:orderId</p>
+                <p>DELETE /order/:orderId</p>
+                <p>Note: Ces URLs sont codées en dur dans le client.</p>
+            </div>
+            <div class="api-response">
+                <h3>Réponse API</h3>
+                <pre id="trackResponse">Attente de la réponse...</pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Démonstration pédagogique - API REST Classique vs HATEOAS</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

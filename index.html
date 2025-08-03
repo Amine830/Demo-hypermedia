@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démonstration REST vs HATEOAS</title>
+    <style>
+        :root {
+            --rest-color: #ff5722;
+            --hateoas-color: #3f51b5;
+            --text-color: #333;
+            --background-color: #f9f9f9;
+            --card-background: #fff;
+            --border-color: #ddd;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .comparison-container {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .comparison-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .api-box {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s;
+        }
+        
+        .api-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .api-box h2 {
+            margin-bottom: 1rem;
+        }
+        
+        .rest-title {
+            color: var(--rest-color);
+        }
+        
+        .hateoas-title {
+            color: var(--hateoas-color);
+        }
+        
+        .api-description {
+            margin-bottom: 1.5rem;
+        }
+        
+        .api-features {
+            margin-bottom: 1.5rem;
+        }
+        
+        .api-features ul {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            text-align: center;
+            color: white;
+        }
+        
+        .demo-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .rest-btn {
+            background-color: var(--rest-color);
+        }
+        
+        .hateoas-btn {
+            background-color: var(--hateoas-color);
+        }
+        
+        .explanation-section {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .explanation-section h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .explanation-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .explanation-card h3 {
+            margin-bottom: 1rem;
+            color: #2196f3;
+        }
+        
+        code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        pre {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .tech-section {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tech-section h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .tech-info {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .tech-box {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #666;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f5f5f5;
+            text-align: left;
+        }
+
+        .rest-resp {
+            background-color: #ffebee;
+        }
+
+        .hateoas-resp {
+            background-color: #e8eaf6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🍕 Démonstration REST vs HATEOAS</h1>
+        <p class="subtitle">Une comparaison visuelle entre une API REST traditionnelle et une API REST avec HATEOAS</p>
+    </header>
+    
+    <main>
+        <div class="comparison-container">
+            <div class="comparison-column">
+                <div class="api-box">
+                    <h2 class="rest-title">API REST Classique</h2>
+                    <div class="api-description">
+                        <p>Une API REST traditionnelle avec des endpoints fixes et prédéfinis. Le client doit connaître à l'avance toutes les URLs possibles.</p>
+                    </div>
+                    <div class="api-features">
+                        <h3>Caractéristiques :</h3>
+                        <ul>
+                            <li>URLs codées en dur dans l'application client</li>
+                            <li>Réponses contenant uniquement les données demandées</li>
+                            <li>Nécessite une documentation externe</li>
+                            <li>Couplage fort entre client et serveur</li>
+                        </ul>
+                    </div>
+                    <a href="client-rest/index.html" target="_blank" class="demo-btn rest-btn">Essayer la démo REST</a>
+                </div>
+            </div>
+            
+            <div class="comparison-column">
+                <div class="api-box">
+                    <h2 class="hateoas-title">API REST HATEOAS</h2>
+                    <div class="api-description">
+                        <p>Une API REST suivant les principes HATEOAS (Hypermedia As The Engine Of Application State). Le client découvre les URLs au fur et à mesure.</p>
+                    </div>
+                    <div class="api-features">
+                        <h3>Caractéristiques :</h3>
+                        <ul>
+                            <li>Découverte dynamique des liens possibles</li>
+                            <li>Réponses contenant données + liens d'actions possibles</li>
+                            <li>Auto-documentation via les hyperliens</li>
+                            <li>Couplage faible entre client et serveur</li>
+                        </ul>
+                    </div>
+                    <a href="client-hateoas/index.html" target="_blank" class="demo-btn hateoas-btn">Essayer la démo HATEOAS</a>
+                </div>
+            </div>
+        </div>
+        
+        <section class="explanation-section">
+            <h2>Explication des différences</h2>
+            
+            <p>Cette démonstration permet de comparer deux approches pour concevoir des API REST :</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>REST Classique</th>
+                        <th>REST HATEOAS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Point d'entrée</td>
+                        <td>Plusieurs endpoints</td>
+                        <td>Un seul point d'entrée (<code>/start</code>)</td>
+                    </tr>
+                    <tr>
+                        <td>Navigation</td>
+                        <td>URL connues à l'avance</td>
+                        <td>URLs découvertes via les liens</td>
+                    </tr>
+                    <tr>
+                        <td>Modifications API</td>
+                        <td>Peut casser les clients existants</td>
+                        <td>Plus robuste aux changements</td>
+                    </tr>
+                    <tr>
+                        <td>Documentation</td>
+                        <td>Externe (Swagger, etc.)</td>
+                        <td>Intégrée dans les réponses</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Comparaison des réponses</h3>
+            
+            <p>Voici comment les réponses diffèrent entre les deux approches :</p>
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h4>REST Classique (GET /track/:orderId)</h4>
+                    <pre class="rest-resp">{
+  "orderId": "abc123",
+  "status": "baking"
+}</pre>
+                </div>
+                <div style="flex: 1; min-width: 300px;">
+                    <h4>REST HATEOAS (GET /track/:orderId)</h4>
+                    <pre class="hateoas-resp">{
+  "order": {
+    "orderId": "abc123",
+    "status": "baking"
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "/track/abc123",
+      "method": "GET"
+    },
+    {
+      "rel": "cancel",
+      "href": "/order/abc123/cancel",
+      "method": "DELETE"
+    },
+    {
+      "rel": "menu",
+      "href": "/menu",
+      "method": "GET"
+    }
+  ]
+}</pre>
+                </div>
+            </div>
+            
+            <h3>Avantages et Inconvénients</h3>
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h4>REST Classique</h4>
+                    <div class="explanation-card" style="background-color: #ffebee; border-color: var(--rest-color);">
+                        <h3 style="color: var(--rest-color);">✅ Avantages</h3>
+                        <ul>
+                            <li>Réponses plus légères</li>
+                            <li>Plus simple à implémenter initialement</li>
+                            <li>Plus facile à comprendre pour les débutants</li>
+                            <li>Meilleure performance (moins de données transférées)</li>
+                            <li>Débogage et tests plus simples (URLs prévisibles)</li>
+                        </ul>
+                    </div>
+                    <div class="explanation-card" style="background-color: #ffebee; border-color: var(--rest-color); margin-top: 1rem;">
+                        <h3 style="color: var(--rest-color);">❌ Inconvénients</h3>
+                        <ul>
+                            <li>Couplage fort client-serveur</li>
+                            <li>Les changements d'URLs peuvent casser les clients</li>
+                            <li>Nécessite une documentation externe à jour</li>
+                            <li>Le client doit gérer la logique de navigation</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="flex: 1; min-width: 300px;">
+                    <h4>REST HATEOAS</h4>
+                    <div class="explanation-card" style="background-color: #e8eaf6; border-color: var(--hateoas-color);">
+                        <h3 style="color: var(--hateoas-color);">✅ Avantages</h3>
+                        <ul>
+                            <li>API auto-documentée</li>
+                            <li>Découvrabilité des fonctionnalités</li>
+                            <li>Décisions de navigation prises par le serveur</li>
+                            <li>Evolution de l'API sans casser les clients</li>
+                            <li>Contrôle des actions disponibles selon le contexte</li>
+                        </ul>
+                    </div>
+                    <div class="explanation-card" style="background-color: #e8eaf6; border-color: var(--hateoas-color); margin-top: 1rem;">
+                        <h3 style="color: var(--hateoas-color);">❌ Inconvénients</h3>
+                        <ul>
+                            <li>Réponses plus verboses</li>
+                            <li>Implémentation plus complexe</li>
+                            <li>Traitement supplémentaire des liens côté client</li>
+                            <li>Peut nécessiter plus d'allers-retours réseau</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="tech-section">
+            <h2>Détails techniques</h2>
+            
+            <div class="tech-info">
+                <div class="tech-box">
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>Node.js avec Express</li>
+                        <li>Deux serveurs distincts (ports 3000 et 3001)</li>
+                        <li>Stockage de données en mémoire</li>
+                        <li>Simulation de progression des commandes</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-box">
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li>HTML, CSS et JavaScript vanilla</li>
+                        <li>Fetch API pour les requêtes HTTP</li>
+                        <li>Visualisation des réponses API</li>
+                        <li>UI adaptative selon les liens disponibles (HATEOAS)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="api-box">
+            <h2>Comment démarrer la démo</h2>
+            <ol>
+                <li>Démarrez d'abord les deux serveurs backend :
+                    <ul>
+                        <li>Dans le dossier <code>pizza-rest/</code> : <code>npm start</code></li>
+                        <li>Dans le dossier <code>pizza-hateoas/</code> : <code>npm start</code></li>
+                    </ul>
+                </li>
+                <li>Ouvrez les clients dans votre navigateur :
+                    <ul>
+                        <li>Client REST : <a href="client-rest/index.html">client-rest/index.html</a></li>
+                        <li>Client HATEOAS : <a href="client-hateoas/index.html">client-hateoas/index.html</a></li>
+                    </ul>
+                </li>
+                <li>Explorez les différentes approches et observez les réponses API !</li>
+            </ol>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Démonstration pédagogique - API REST Classique vs HATEOAS - 2025</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "name": "rest-vs-hateoas-demo",
+  "version": "1.0.0",
+  "description": "Démonstration pédagogique comparant REST classique et REST HATEOAS",
+  "main": "index.html",
+  "scripts": {
+    "start": "./start-servers.sh",
+    "install-all": "cd pizza-rest && npm install && cd ../pizza-hateoas && npm install",
+    "clean": "rm -rf pizza-rest/node_modules pizza-hateoas/node_modules",
+    "dev": "npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amine830/Demo-hypermedia.git"
+  },
+  "keywords": [
+    "rest",
+    "hateoas",
+    "api",
+    "hypermedia",
+    "demonstration",
+    "pedagogical",
+    "pizza",
+    "javascript",
+    "nodejs",
+    "express",
+    "education"
+  ],
+  "author": "amine.nedjar4716@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Amine830/Demo-hypermedia/issues"
+  },
+  "homepage": "https://github.com/Amine830/Demo-hypermedia#readme",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "directories": {
+    "doc": "docs"
+  }
+}
