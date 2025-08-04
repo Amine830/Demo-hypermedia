@@ -7,10 +7,13 @@
  * - Le client s'adapte aux actions disponibles fournies par le serveur
  */
 
-// Configuration de l'API
-const API_URL = 'http://localhost:3001';
+// Configuration de l'API - Utilise la configuration dynamique
+const API_URL = window.API_CONFIG ? window.API_CONFIG.HATEOAS_API_URL : 'http://localhost:3001';
 let currentPizza = null;
 let availableLinks = {};
+
+// Log de l'URL utilisée pour débuggage
+console.log('🌐 Client HATEOAS - API URL:', API_URL);
 
 // Gestion de navigation entre les pages
 function showPage(pageId) {

@@ -15,8 +15,23 @@ const app = express();
 const PORT = 3001; // Port différent de l'API REST classique
 
 // Middleware
-app.use(cors()); // Pour permettre les requêtes cross-origin depuis le client
-app.use(bodyParser.json()); // Pour parser les requêtes JSON
+// Configuration CORS pour local et production
+app.use(cors({
+  origin: [
+    'http://localhost:5500',
+    'http://localhost:8080',
+    'http://localhost:3000',
+    'http://127.0.0.1:5500',
+    'http://127.0.0.1:8080',
+    'https://demo-hypermedia.netlify.app',
+    /\.github\.io$/,
+    /\.netlify\.app$/,
+  ],
+  credentials: true
+}));
+
+// Pour parser les requêtes JSON
+app.use(bodyParser.json()); 
 
 // Données en mémoire
 const pizzas = [
@@ -31,8 +46,27 @@ const orders = new Map();
 
 // Fonction utilitaire pour créer des URLs complètes avec le hostname
 function getFullUrl(req, path) {
-  // Dans un environnement de production, utilisez req.protocol + '://' + req.get('host')
-  return `http://localhost:${PORT}${path}`;
+  // Détection automatique de l'environnement
+  const nodeEnv = process.env.NODE_ENV;
+  const hostHeader = req.get('host');
+  const isProduction = nodeEnv === 'production' || hostHeader !== `localhost:${PORT}`;
+  
+  // Log pour débuggage
+  console.log(`🔍 Détection environnement: NODE_ENV=${nodeEnv}, host=${hostHeader}, isProduction=${isProduction}`);
+  
+  if (isProduction) {
+    // En production : utilise le protocol et host de la requête
+    const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+    const host = req.get('host');
+    const fullUrl = `${protocol}://${host}${path}`;
+    console.log(`🌐 Production URL générée: ${fullUrl}`);
+    return fullUrl;
+  } else {
+    // En développement local : utilise localhost
+    const localUrl = `http://localhost:${PORT}${path}`;
+    console.log(`💻 Local URL générée: ${localUrl}`);
+    return localUrl;
+  }
 }
 
 // Point d'entrée de l'API HATEOAS

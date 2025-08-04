@@ -6,10 +6,13 @@
  * - Le client doit connaître à l'avance tous les endpoints et leur structure
  */
 
-// Configuration de l'API
-const API_URL = 'http://localhost:3000';
+// Configuration de l'API - Utilise la configuration dynamique
+const API_URL = window.API_CONFIG ? window.API_CONFIG.REST_API_URL : 'http://localhost:3000';
 let currentPizza = null;
 let currentOrderId = null;
+
+// Log de l'URL utilisée pour débuggage
+console.log('🍕 Client REST - API URL:', API_URL);
 
 // Gestion de navigation entre les pages
 function showPage(pageId) {

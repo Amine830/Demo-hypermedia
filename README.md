@@ -1,5 +1,6 @@
 # 🍕 Démonstration REST vs HATEOAS
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7e506daa-423e-49a6-9048-ea98aeb07128/deploy-status)](https://app.netlify.com/projects/demo-hypermedia/deploys)
 [![Node.js](https://img.shields.io/badge/Node.js-v16+-green.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -136,6 +137,15 @@ demo/
    Ouvrez `index.html` dans votre navigateur ou accédez directement aux clients :
    - [Client REST Classique](http://localhost:8080/client-rest/index.html)
    - [Client HATEOAS](http://localhost:8080/client-hateoas/index.html)
+
+### Version de production
+
+Les serveurs sont également déployés en ligne :
+
+- **API REST Classique** : <https://demo-hypermedia-rest.onrender.com>
+- **API REST HATEOAS** : <https://demo-hypermedia.onrender.com>
+
+> 🎯 **Configuration automatique** : Le projet détecte automatiquement l'environnement (local/production) et utilise les bonnes URLs d'API grâce au fichier `config.js`.
 
 ## ✨ Fonctionnalités
 

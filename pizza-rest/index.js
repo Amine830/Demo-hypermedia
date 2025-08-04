@@ -14,8 +14,23 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
-app.use(cors()); // Pour permettre les requêtes cross-origin depuis le client
-app.use(bodyParser.json()); // Pour parser les requêtes JSON
+// Configuration CORS pour local et production
+app.use(cors({
+  origin: [
+    'http://localhost:5500',
+    'http://localhost:8080',
+    'http://localhost:3000',
+    'http://127.0.0.1:5500',
+    'http://127.0.0.1:8080',
+    'https://demo-hypermedia.netlify.app',
+    /\.github\.io$/,
+    /\.netlify\.app$/,
+  ],
+  credentials: true
+}));
+
+// Pour parser les requêtes JSON
+app.use(bodyParser.json()); 
 
 // Données en mémoire
 const pizzas = [

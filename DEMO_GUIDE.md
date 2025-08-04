@@ -11,8 +11,9 @@ Cette démonstration compare deux approches d'API REST pour illustrer la différ
 
 ### 1. Lancer les Serveurs
 
+**En local :**
+
 ```bash
-cd demo
 ./start-servers.sh
 ```
 
@@ -20,6 +21,15 @@ Les serveurs démarrent sur :
 
 - **REST Classique** : <http://localhost:3000>
 - **REST HATEOAS** : <http://localhost:3001>
+
+**En production :**
+
+Les serveurs sont hébergés sur :
+
+- **REST Classique** : <https://demo-hypermedia-rest.onrender.com>
+- **REST HATEOAS** : <https://demo-hypermedia.onrender.com>
+
+> 💡 **Configuration automatique** : Les clients détectent automatiquement l'environnement (local/production) et utilisent les bonnes URLs !
 
 ### 2. Ouvrir l'Interface
 
