@@ -16,11 +16,11 @@ Une démonstration pédagogique et visuelle pour comprendre la différence entre
 - [Utilisation](#-utilisation)
 - [Fonctionnalités](#-fonctionnalités)
 - [Guide de démonstration](#-guide-de-démonstration)
+- [Démonstration en images](#-démonstration-en-images)
 - [Comparaison technique](#-comparaison-technique)
 - [Contribution](#-contribution)
 - [Ressources](#-ressources)
 - [Licence](#-licence)
-<!-- - [Démonstration en images](#-démonstration-en-images) -->
 
 ## 🎯 Objectif
 
@@ -173,17 +173,13 @@ Pour une démonstration complète et détaillée, consultez le **[Guide de démo
 - ❓ Questions fréquemment posées
 - 🎨 Conseils pour une présentation efficace
 
-<!-- ## 📸 Démonstration en images
+## 📸 Démonstration en images
 
-### Interface de comparaison
+![Page d'accueil](assets/screenshots/im1.png)
 
-![Comparaison des approches](docs/images/comparison.png)
+![Comparaison des approches](assets/screenshots/im6.png)
 
-### Réponses API
-
-![Réponses JSON](docs/images/api-responses.png)
-
-> **Note :** Les images sont à ajouter dans le dossier `docs/images/` -->
+les autres images sont disponibles dans le dossier [`assets/screenshots/`](assets/screenshots/).
 
 ## 🔧 Comparaison technique
 

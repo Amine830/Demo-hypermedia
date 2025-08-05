@@ -12,9 +12,6 @@ const API_URL = window.API_CONFIG ? window.API_CONFIG.HATEOAS_API_URL : 'http://
 let currentPizza = null;
 let availableLinks = {};
 
-// Log de l'URL utilisée pour débuggage
-console.log('🌐 Client HATEOAS - API URL:', API_URL);
-
 // Gestion de navigation entre les pages
 function showPage(pageId) {
   // Cacher toutes les pages
@@ -29,27 +26,34 @@ function showPage(pageId) {
 // Point d'entrée de l'application - Le seul URL hardcodé
 async function startApplication() {
   try {
-    // L'API HATEOAS a un point d'entrée unique avec le préfixe v1
-    const response = await fetch(`${API_URL}/v1/start`);
-    const data = await response.json();
+    // L'API HATEOAS avec animation de loading
+    const data = await window.pizzaLoader.wrapApiCall(
+      fetch(`${API_URL}/v1/start`).then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      }),
+      'hateoas',
+      'Découverte de l\'API...'
+    );
     
     // Stocker les liens disponibles
     saveLinks(data.links);
-    console.log('Liens disponibles:', data.links);
     
     // Afficher la réponse
     document.getElementById('menuResponse').textContent = JSON.stringify(data, null, 2);
     
-    // Utiliser le lien "menu" pour naviguer vers le menu
+    // Naviguer vers la page menu
+    showPage('menu');
+    
+    // Charger le menu après la navigation
     const menuLink = findLink('menu');
     if (menuLink) {
-      loadMenu(menuLink.href);
+      await loadMenu(menuLink.href);
     } else {
       console.error("Lien 'menu' non trouvé dans la réponse");
     }
-    
-    // Naviguer vers la page menu
-    showPage('menu');
   } catch (error) {
     console.error('Erreur lors du démarrage de l\'application:', error);
     alert('Erreur lors du démarrage de l\'application. Veuillez réessayer.');
@@ -62,8 +66,11 @@ async function loadMenu(menuUrl) {
     const pizzaListElement = document.getElementById('pizzaList');
     pizzaListElement.innerHTML = '<div class="loading">Chargement du menu...</div>';
     
-    // Utiliser l'URL dynamique fournie par l'API
+    // Appel direct sans animation (serveur déjà actif)
     const response = await fetch(menuUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
     const data = await response.json();
     
     // Afficher la réponse brute
@@ -157,7 +164,7 @@ async function submitOrder(event) {
       return;
     }
     
-    // Utiliser l'URL dynamique fournie par l'API
+    // Utiliser l'URL dynamique fournie par l'API (serveur déjà actif)
     const response = await fetch(orderLink.href, {
       method: orderLink.method,
       headers: {
@@ -166,30 +173,31 @@ async function submitOrder(event) {
       body: JSON.stringify(orderData)
     });
     
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
     const orderResult = await response.json();
     
     // Afficher la réponse brute
     document.getElementById('orderResponse').textContent = JSON.stringify(orderResult, null, 2);
     
-    if (response.ok) {
-      // Stocker les liens disponibles
-      saveLinks(orderResult.links);
+    // Stocker les liens disponibles
+    saveLinks(orderResult.links);
+    
+    // Afficher les liens disponibles
+    renderLinks('orderLinksContainer');
+    
+    // Mettre à jour la page de suivi
+    document.getElementById('displayOrderId').textContent = orderResult.order.orderId;
+    
+    // Trouver le lien de suivi
+    const trackLink = findLink('track');
+    if (trackLink) {
+      // Suivre la commande en utilisant le lien fourni
+      await trackOrder(trackLink.href);
       
-      // Afficher les liens disponibles
-      renderLinks('orderLinksContainer');
-      
-      // Mettre à jour la page de suivi
-      document.getElementById('displayOrderId').textContent = orderResult.order.orderId;
-      
-      // Trouver le lien de suivi
-      const trackLink = findLink('track');
-      if (trackLink) {
-        // Suivre la commande en utilisant le lien fourni
-        await trackOrder(trackLink.href);
-        
-        // Afficher la page de suivi
-        showPage('track');
-      }
+      // Afficher la page de suivi
+      showPage('track');
     }
   } catch (error) {
     console.error('Erreur lors de la création de la commande:', error);
@@ -203,8 +211,11 @@ async function trackOrder(trackUrl) {
   try {
     document.getElementById('trackResponse').textContent = 'Récupération des informations...';
     
-    // Utiliser l'URL dynamique fournie par l'API
+    // Utiliser l'URL dynamique fournie par l'API (serveur déjà actif)
     const response = await fetch(trackUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
     const trackResult = await response.json();
     
     // Afficher la réponse brute
@@ -236,11 +247,14 @@ async function cancelOrder(cancelUrl) {
     
     document.getElementById('trackResponse').textContent = 'Annulation de la commande...';
     
-    // Utiliser l'URL dynamique fournie par l'API
+    // Utiliser l'URL dynamique fournie par l'API (serveur déjà actif)
     const response = await fetch(cancelUrl, {
       method: 'DELETE'
     });
     
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
     const cancelResult = await response.json();
     
     // Afficher la réponse brute

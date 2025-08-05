@@ -11,9 +11,6 @@ const API_URL = window.API_CONFIG ? window.API_CONFIG.REST_API_URL : 'http://loc
 let currentPizza = null;
 let currentOrderId = null;
 
-// Log de l'URL utilisée pour débuggage
-console.log('🍕 Client REST - API URL:', API_URL);
-
 // Gestion de navigation entre les pages
 function showPage(pageId) {
   // Cacher toutes les pages
@@ -38,17 +35,22 @@ async function loadMenu() {
     const pizzaListElement = document.getElementById('pizzaList');
     pizzaListElement.innerHTML = '<div class="loading">Chargement du menu...</div>';
     
-    // Requête REST classique - URL codée en dur avec le préfixe v1
-    const response = await fetch(`${API_URL}/v1/menu`);
-    const pizzas = await response.json();
-    
-    // Afficher la réponse brute
-    document.getElementById('menuResponse').textContent = JSON.stringify(pizzas, null, 2);
+    // Premier appel avec animation pour réveiller le serveur
+    const data = await window.pizzaLoader.wrapApiCall(
+      fetch(`${API_URL}/v1/menu`).then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      }),
+      'rest',
+      'Chargement du menu...'
+    );
     
     // Afficher les pizzas
-    if (pizzas.length > 0) {
+    if (data.length > 0) {
       pizzaListElement.innerHTML = '';
-      pizzas.forEach(pizza => {
+      data.forEach(pizza => {
         const pizzaCard = document.createElement('div');
         pizzaCard.className = 'pizza-card';
         pizzaCard.innerHTML = `
@@ -113,7 +115,7 @@ async function submitOrder(event) {
     
     document.getElementById('orderResponse').textContent = 'Envoi de la commande...';
     
-    // Requête REST classique - URL codée en dur avec le préfixe v1
+    // Requête REST classique (serveur déjà actif)
     const response = await fetch(`${API_URL}/v1/order`, {
       method: 'POST',
       headers: {
@@ -122,23 +124,21 @@ async function submitOrder(event) {
       body: JSON.stringify(orderData)
     });
     
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
     const orderResult = await response.json();
     
-    // Afficher la réponse brute
-    document.getElementById('orderResponse').textContent = JSON.stringify(orderResult, null, 2);
+    // Stocker l'ID de la commande pour le suivi
+    currentOrderId = orderResult.orderId;
     
-    if (response.ok) {
-      // Stocker l'ID de la commande pour le suivi
-      currentOrderId = orderResult.orderId;
-      
-      // Mettre à jour la page de suivi
-      document.getElementById('displayOrderId').textContent = currentOrderId;
-      
-      // Afficher la page de suivi
-      setTimeout(() => {
-        showPage('track');
-      }, 1000);
-    }
+    // Mettre à jour la page de suivi
+    document.getElementById('displayOrderId').textContent = currentOrderId;
+    
+    // Afficher la page de suivi
+    setTimeout(() => {
+      showPage('track');
+    }, 1000);
   } catch (error) {
     console.error('Erreur lors de la création de la commande:', error);
     document.getElementById('orderResponse').textContent = 
@@ -151,12 +151,13 @@ async function trackOrder(orderId) {
   try {
     document.getElementById('trackResponse').textContent = 'Récupération des informations...';
     
-    // Requête REST classique - URL codée en dur avec le préfixe v1 et l'ID de commande dans le chemin
+    // Requête REST classique (serveur déjà actif)
     const response = await fetch(`${API_URL}/v1/track/${orderId}`);
-    const trackResult = await response.json();
     
-    // Afficher la réponse brute
-    document.getElementById('trackResponse').textContent = JSON.stringify(trackResult, null, 2);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    const trackResult = await response.json();
     
     // Mettre à jour l'interface
     const statusBadge = document.getElementById('orderStatusBadge');
@@ -188,15 +189,15 @@ async function cancelOrder(orderId) {
     
     document.getElementById('trackResponse').textContent = 'Annulation de la commande...';
     
-    // Requête REST classique - URL codée en dur avec le préfixe v1
+    // Requête REST classique (serveur déjà actif)
     const response = await fetch(`${API_URL}/v1/order/${orderId}`, {
       method: 'DELETE'
     });
     
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
     const cancelResult = await response.json();
-    
-    // Afficher la réponse brute
-    document.getElementById('trackResponse').textContent = JSON.stringify(cancelResult, null, 2);
     
     // Mettre à jour l'interface
     const statusBadge = document.getElementById('orderStatusBadge');

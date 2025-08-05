@@ -64,15 +64,12 @@ function getFullUrl(req, path) {
   } else {
     // En développement local : utilise localhost
     const localUrl = `http://localhost:${PORT}${path}`;
-    console.log(`💻 Local URL générée: ${localUrl}`);
     return localUrl;
   }
 }
 
 // Point d'entrée de l'API HATEOAS
 app.get('/v1/start', (req, res) => {
-  console.log('GET /v1/start - Point d\'entrée de l\'API HATEOAS');
-  
   res.json({
     message: "Bienvenue sur l'API HATEOAS Pizza",
     links: [
@@ -88,8 +85,6 @@ app.get('/v1/start', (req, res) => {
 
 // Endpoint pour récupérer le menu
 app.get('/v1/menu', (req, res) => {
-  console.log('GET /v1/menu - Retourne la liste des pizzas avec des liens HATEOAS');
-  
   res.json({
     pizzas,
     links: [
@@ -163,8 +158,6 @@ app.post('/v1/order', (req, res) => {
 
   // Stocker la commande
   orders.set(orderId, order);
-  
-  console.log(`POST /v1/order - Création de la commande ${orderId} avec liens HATEOAS`);
   
   // Simuler la progression de la commande
   setTimeout(() => {
@@ -242,7 +235,6 @@ app.get('/v1/track/:orderId', (req, res) => {
   }
   
   const order = orders.get(orderId);
-  console.log(`GET /v1/track/${orderId} - Suivi de la commande avec liens HATEOAS, status: ${order.status}`);
   
   // Construction dynamique des liens en fonction de l'état de la commande
   const links = [
@@ -327,7 +319,6 @@ app.delete('/v1/order/:orderId/cancel', (req, res) => {
   
   // Annuler la commande
   order.status = "cancelled";
-  console.log(`DELETE /v1/order/${orderId}/cancel - Commande annulée avec liens HATEOAS`);
   
   // Réponse HATEOAS avec des liens dynamiques
   res.json({

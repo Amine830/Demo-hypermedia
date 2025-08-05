@@ -45,7 +45,6 @@ const orders = new Map();
 
 // Endpoint pour récupérer le menu
 app.get('/v1/menu', (req, res) => {
-  console.log('GET /v1/menu - Retourne la liste des pizzas disponibles');
   res.json(pizzas);
 });
 
@@ -77,8 +76,6 @@ app.post('/v1/order', (req, res) => {
 
   // Stocker la commande
   orders.set(orderId, order);
-  
-  console.log(`POST /v1/order - Création de la commande ${orderId}`);
   
   // Simuler la progression de la commande
   setTimeout(() => {
@@ -116,7 +113,6 @@ app.get('/v1/track/:orderId', (req, res) => {
   }
   
   const order = orders.get(orderId);
-  console.log(`GET /v1/track/${orderId} - Suivi de la commande, status: ${order.status}`);
   
   // Réponse minimaliste pour l'API REST classique
   res.json({
@@ -143,7 +139,6 @@ app.delete('/v1/order/:orderId', (req, res) => {
   
   // Annuler la commande
   order.status = "cancelled";
-  console.log(`DELETE /v1/order/${orderId} - Commande annulée`);
   
   // Réponse minimaliste pour l'API REST classique
   res.json({
